@@ -2,14 +2,18 @@ import { isBlank, isPresent } from '@ember/utils';
 import { A } from '@ember/array';
 import EmberObject, { computed, get } from '@ember/object';
 import Component from '@ember/component';
+import { getOwner } from '@ember/application';
+import { inject as service } from '@ember/service';
 
 export default Component.extend({
-  router: null,
-  routerService: null,
+  routerService: service('router'),
 
   routeInfos: computed("routerService.currentRouteName", function() {
-    var router = this.get("router")._routerMicrolib || this.get("router").router;
-    return router.currentRouteInfos || router.currentHandlerInfos;
+    const owner = getOwner(this);
+    const router = owner.lookup('router:main');
+    const routerLib = router._routerMicrolib || router.router;
+
+    return routerLib.currentRouteInfos || routerLib.currentHandlerInfos;
   }),
 
   /*
